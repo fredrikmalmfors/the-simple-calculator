@@ -1,8 +1,10 @@
-result add revenue
-result subtract costs
-revenue add 200
-costs add salaries
-salaries add 20
-salaries multiply 5
-costs add 10
-print result
+cost add food
+cost add drinks
+discount add 5
+food add 12
+drinks add 18
+cost multiply 5
+print cost
+cost subtract discount
+print cost
+quit
