@@ -16,6 +16,8 @@ Enter a file path to read input from file. Skip the [file] argument to read from
 * Operation: ADD, SUBTRACT, or MULTIPLY
 * Value: Either an integer or a register
 
+All input is case insensitive.
+
 ### Operation
 Performs a given operation with given value on given register.
 ```
