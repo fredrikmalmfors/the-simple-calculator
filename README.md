@@ -57,20 +57,25 @@ Output
 145
 ```
 
-## What you cannot
+---
 
-The evaluation of registers is recursive, and if A is dependent on B, and B is dependent on A, a RecursionError will be raised.
+The calculator can handle circular dependencies.
 
 Input
 ```
 A add B
-B add A
-B add 20
+B add C
+C add A
+A add 3
+print A
 print B
+print C
 quit
 ```
 Output
 ```
-RecursionError
+3
+3
+3
 ```
 
