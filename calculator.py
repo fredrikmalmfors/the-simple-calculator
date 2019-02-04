@@ -19,20 +19,31 @@ operations = ["add", "subtract", "multiply"]
 class Register:
     """Register object representing a register in the calculator.
 
-    Contains the name of the register, along with a list of instructions (add, subtract...)
+    Contains the name of the register, along with lists of instructions (add, subtract...)
     to be performed on this register.
+
+    The active_instructions list contains the instructions that has not yet
+    been executed in the current print register call. It is used to handle circular dependencies of registers.
 
     """
 
     def __init__(self, name):
         self.name = name
-        self.instructions = []
+        self.active_instructions = []
+        self.all_instructions = []
+        self.register_value = 0
 
     def add_instruction(self, operation, value):
         """Appends an instruction [operation, value] to this registers list of instructions.
 
         """
-        self.instructions.append([operation, value])
+        self.all_instructions.append([operation, value])
+
+    def reset_instructions(self):
+        """ Called before a print register call, to say that all instructions must be evaluated again.
+
+        """
+        self.active_instructions = self.all_instructions
 
     def evaluate(self):
         """Evaluates the value of the register by executing (calculating) the instructions in order.
@@ -43,24 +54,26 @@ class Register:
         Returns the final value after all instructions has been executed.
 
         """
-        register_value = 0
-        for inst in self.instructions:
+
+        while len(self.active_instructions) > 0:
+            inst = self.active_instructions.pop(0)
             operation = inst[0]
             value = inst[1]
 
             # value is number.
             if value.isdecimal():
-                register_value = calculate(register_value, operation, int(value))
+                self.register_value = calculate(self.register_value, operation, int(value))
 
             # value is register.
             else:
                 for register in registers:
                     if register.name == value:
-                        register_value = calculate(register_value, operation, register.evaluate())
+                        self.register_value = calculate(self.register_value, operation, register.evaluate())
                         break
                 else:
                     print("The register " + value + " could not be found")
-        return register_value
+
+        return self.register_value
 
 
 def find_register(register_name):
@@ -90,11 +103,18 @@ def print_register(register_name):
     """Prints the value of the given register by calling evaluate()
 
     """
+
     register = find_register(register_name)
     if not register:
         print("No register with name: " + register_name)
     else:
+        reset_all_register_instructions()
         print(register.evaluate())
+
+
+def reset_all_register_instructions():
+    for register in registers:
+        register.reset_instructions()
 
 
 def calculate(register_value, operation, value):
